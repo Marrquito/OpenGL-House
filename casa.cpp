@@ -62,7 +62,7 @@ void draw_circle(GLfloat cx, GLfloat cy, float radius, int segments)
     glBegin(GL_TRIANGLE_FAN);
         for (int i = 0; i <= segments; ++i)
         {
-            float theta = (2.0f * M_PI * float(i)) / float(segments);
+            float theta = (2.0f * M_PI * static_cast<float>(i)) / static_cast<float>(segments);
             
             float x = radius * cos(theta);
             float y = radius * sin(theta);
@@ -107,11 +107,11 @@ void draw_square(GLint xi, GLint yi, GLint xf, GLint yf, GLboolean setColor)
     glEnd();
 }
 
-void draw_line(GLint xi, GLint yi, GLint xf, GLint yf)
+void draw_line(GLfloat xi, GLfloat yi, GLfloat xf, GLfloat yf)
 {
     glBegin(GL_LINES | GL_LINE_STRIP | GL_LINE_LOOP);
-        glVertex2i(xi, yi);
-        glVertex2i(xf, yf);
+        glVertex2f(xi, yi);
+        glVertex2f(xf, yf);
 
     glEnd();
 }
@@ -120,13 +120,13 @@ void draw_house()
 {
     // telhado pt1 
     glBegin(GL_TRIANGLES);
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(0.0f, 1.0f, 0.0f);
         glVertex2f(400.0f, 150.0f);
 
-        glColor3f(0.0f, 1.0f, 0.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
         glVertex2f(500.0f, 300.0f);
         
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
         glVertex2f(300.0f, 300.0f);
     glEnd();
 
@@ -135,13 +135,13 @@ void draw_house()
         glColor3f(1.0f, 0.0f, 0.0f);
         glVertex2f(300.0f, 300.0f);
 
-        glColor3f(0.0f, 1.0f, 0.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
         glVertex2f(700.0f, 300.0f);
 
         glColor3f(0.0f, 1.0f, 1.0f);
         glVertex2f(700.0f, 450.0f);
         
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glColor3f(0.0f, 1.0f, 0.0f);
         glVertex2f(300.0f, 450.0f);
     glEnd();
 
@@ -153,10 +153,10 @@ void draw_house()
         glColor3f(1.0f, 0.0f, 0.0f);
         glVertex2f(600.0f, 150.0f);
 
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glColor3f(0.0f, 1.0f, 1.0f);
         glVertex2f(700.0f, 300.0f);
 
-        glColor3f(0.0f, 1.0f, 1.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
         glVertex2f(500.0f, 300.0f);
     glEnd();
 
@@ -174,19 +174,6 @@ void draw_house()
     // janelinha 2
     draw_square(630.0f, 335.0f, 680.0f, 375.0f, true);
 
-    // linha meio casa
-    glColor3f(0.0f, 0.0f, 0.0f);
-    draw_line(500.0f, 300.0f, 500.0f, 450.0f);
-
-    // grama
-    if (DRAW_RAIN_CLOUDS && DRAW_CLOUDS)    glColor3f(0.33f, 0.419f, 0.18f);
-    else                                    glColor3f(0.13f, 0.54f, 0.13f);
-    draw_square(0.0f, 450.0f, WIDTH, HEIGHT, false);
-
-    // Desenha o caminho
-    glColor3f(0.5f, 0.5f, 0.5f);
-    draw_square(330.0f, 450.0f, 390.0f, HEIGHT, false);
-
     // linha vertical janela1
     glColor3f(0.0f, 0.0f, 0.0f);
     draw_line(565.0f, 335.0f, 565.0f, 375.0f);
@@ -195,7 +182,61 @@ void draw_house()
     // linhas janela2
     draw_line(655.0f, 335.0f, 655.0f, 375.0f);
     draw_line(630.0f, 355.0f, 680.0f, 355.0f);
-  
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+    // telhas e contornos da casa
+    GLfloat xiv = 400.0f, xfv = 500.0f;
+    GLfloat xih = 400.0f, yih = 150.0f, xfh = 600.0f, yfh = 300.0f;
+
+    while ((xiv != 600.0f && xfv != 700) || (yih <= yfh))
+    {
+        if (xiv != 600.0f && xfv != 700)
+        {
+            draw_line(xiv, 150.0f, xfv, 300.0f);
+
+            xiv += 10.0f;
+            xfv += 10.0f;
+        }
+
+        if (yih <= yfh) 
+        {
+            draw_line(xih, yih, xfh, yih);
+
+            yih += 10.0f;
+            xih += 6.5f;
+            xfh += 6.5f;
+        }
+    }
+
+    // contorno triangulo
+    draw_line(300.0f, 300.0f, 700.0f, 300.0f);
+    draw_line(300.0f, 300.0f, 400.0f, 150.0f);
+
+    // 1° linha base da casa
+    draw_line(300.0f, 300.0f, 300.0f, 450.0f);
+    
+    // linha meio casa
+    draw_line(500.0f, 300.0f, 500.0f, 450.0f);
+
+    // ultima linha base da casa
+    draw_line(700.0f, 300.0f, 700.0f, 450.0f);
+
+    // chao da casa
+    draw_line(300.0f, 450.0f, 700.0f, 450.0f);
+
+    // final 2 telhado
+    draw_line(600.0f, 150.0f, 700.0f, 300.0f);
+
+    // janela teto principal
+    if (!DRAW_CLOUDS)   glColor3f(0.75f, 0.8f, 0.09f);
+    else                glColor3f(1.0f, 1.0f, 1.0f);
+    draw_circle(400.0f, 250.0f, 25.0f, 100);
+    
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+    draw_line(400.0f, 225.0f, 400.0f, 275.0f);
+    draw_line(375.0f, 250.0f, 425.0f, 250.0f);
 }
 
 void draw_star(GLfloat x, GLfloat y)
@@ -225,7 +266,7 @@ void updateRain()
     }
 }
 
-void drawRaindrop(GLfloat x, GLfloat y)
+void draw_raindrop(GLfloat x, GLfloat y)
 {
     glColor3f(0.0f, 0.5f, 1.0f);
 
@@ -235,11 +276,11 @@ void drawRaindrop(GLfloat x, GLfloat y)
     glEnd();
 }
 
-void draw_RainScene()
+void draw_rainScene()
 {
     for (const auto& raindrop : raindrops)
     {
-        drawRaindrop(raindrop.x, raindrop.y);
+        draw_raindrop(raindrop.x, raindrop.y);
     }
 }
 
@@ -261,6 +302,46 @@ void update(int value)
     glutTimerFunc(16, update, 0);
 }
 
+void draw_tree()
+{
+    // tronco
+    glColor3f(0.5, 0.35, 0.05); 
+    glBegin(GL_POLYGON);
+        glVertex2f(190, 350);
+        glVertex2f(210, 350);
+        glVertex2f(210, 450);
+        glVertex2f(190, 450);
+    glEnd();
+
+    // folhas
+    glColor3f(0.0, 0.5, 0.0); 
+    glBegin(GL_TRIANGLES);
+        glVertex2f(200, 300);
+        glVertex2f(180, 395);
+        glVertex2f(220, 395);
+    glEnd();
+}
+
+void draw_bird(GLfloat x, GLfloat y)
+{
+    // corpo
+    glColor3f(0.0, 0.5, 0.0);
+    glBegin(GL_POLYGON);
+        glVertex2f(x, y);
+        glVertex2f(x + 10, y - 10);
+        glVertex2f(x + 20, y);
+        glVertex2f(x + 10, y + 10);
+    glEnd();
+
+    // cabeça
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(x + 20, y);
+        for (int i = 0; i <= 360; i += 10) glVertex2f(x + 20 + 5 * cos(i * 3.14 / 180), y + 5 * sin(i * 3.14 / 180));
+        
+    glEnd();
+}
+
 void draw() 
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -271,7 +352,7 @@ void draw()
         if (DRAW_RAIN_CLOUDS)   
         {
             glColor3f(0.41f, 0.41f, 0.41f);
-            draw_RainScene();
+            draw_rainScene();
             updateRain();
         }
         else glColor3f(0.7f, 1.0f, 1.0f);
@@ -284,6 +365,24 @@ void draw()
 
     draw_house();
     
+    // grama
+    if (DRAW_RAIN_CLOUDS && DRAW_CLOUDS)    glColor3f(0.33f, 0.419f, 0.18f);
+    else                                    glColor3f(0.13f, 0.54f, 0.13f);
+    draw_square(0.0f, 450.0f, WIDTH, HEIGHT, false);
+
+    // Desenha o caminho
+    glColor3f(0.5f, 0.5f, 0.5f);
+    draw_square(330.0f, 450.0f, 390.0f, HEIGHT, false);
+    
+    draw_tree();
+
+    if (DRAW_CLOUDS && !DRAW_RAIN_CLOUDS)
+    {
+        draw_bird(100.0, 150.0);
+        draw_bird(200.0, 200.0);
+        draw_bird(300.0, 50.0);
+    }
+    
     glFlush();
 }
 
@@ -291,6 +390,8 @@ void keyboard_handle(GLubyte key, GLint x, GLint y)
 {
     if ((glutGetModifiers() == GLUT_ACTIVE_CTRL) && key == 0)
     {
+        cout << "Mudando para noite... " << endl;
+
         DRAW_CLOUDS = false;
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -298,6 +399,7 @@ void keyboard_handle(GLubyte key, GLint x, GLint y)
     }
     else 
     {
+        cout << "Mudando para dia claro... " << endl;
         DRAW_CLOUDS         = true;
         DRAW_RAIN_CLOUDS    = false;
 
